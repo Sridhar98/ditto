@@ -13,7 +13,9 @@ from .dataset import DittoDataset
 from torch.utils import data
 from transformers import AutoModel, AdamW, get_linear_schedule_with_warmup
 from tensorboardX import SummaryWriter
+import collections.abc as container_abcs
 from apex import amp
+
 
 lm_mp = {'roberta': 'roberta-base',
          'distilbert': 'distilbert-base-uncased'}
@@ -21,7 +23,8 @@ lm_mp = {'roberta': 'roberta-base',
 class DittoModel(nn.Module):
     """A baseline model for EM."""
 
-    def __init__(self, device='cuda', lm='roberta', alpha_aug=0.8):
+    #default lm was 'roberta'
+    def __init__(self, device='cuda', lm='flan-t5-small', alpha_aug=0.8):
         super().__init__()
         if lm in lm_mp:
             self.bert = AutoModel.from_pretrained(lm_mp[lm])
