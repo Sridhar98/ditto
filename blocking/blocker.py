@@ -95,7 +95,7 @@ if __name__ == "__main__":
     parser.add_argument("--output_fn", type=str, default='candidates.jsonl')
     parser.add_argument("--model_fn", type=str, default="model.pth/")
     parser.add_argument("--batch_size", type=int, default=512)
-    parser.add_argument("--k", type=int, default=10)
+    parser.add_argument("--k", type=int, default=2)
     parser.add_argument("--threshold", type=float, default=None) # 0.6
     hp = parser.parse_args()
 
