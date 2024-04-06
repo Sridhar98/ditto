@@ -97,15 +97,21 @@ class AutoEncoderTrainer:
                 #added by sr
                 #self.model = self.model.to(self.device)
                 optimizer.zero_grad()
+                start_time
                 output = self.model(data)
+                end_time
+                time_elapsed = end_time-start_time
+
                 print('output',output,'data',data)
                 loss = loss_function(output, data)
                 loss.backward()
                 train_loss += loss.item()
                 optimizer.step()
             print('====> Epoch: {} Average loss: {:.4f}'.format(epoch, train_loss / num_tuples))
-        
+
         self.model.eval()
+
+        self.save_model('./checkpoints/ae.pt')
         
         return self.model
     
@@ -182,7 +188,9 @@ class CTTModelTrainer:
             print('====> Epoch: {} Average loss: {:.4f}'.format(epoch, train_loss / num_tuples))
         
         self.model.eval()
-        
+
+        self.save_model('./checkpoints/ctt.pt')
+
         return self.model
     
     def save_model(self, output_file_name):

@@ -4,6 +4,7 @@ import jsonlines
 import pickle
 import numpy as np
 import argparse
+import time
 
 from tqdm import tqdm
 
@@ -28,7 +29,7 @@ def encode_all(path, input_fn, model, overwrite=False):
     output_fn = input_fn + '.mat'
 
     # read from input_fn
-    lines = open(input_fn).read().split('\n')
+    lines = open(input_fn,encoding='iso-8859-1').read().split('\n')
 
     # encode and dump
     if not os.path.exists(output_fn) or overwrite:
@@ -93,7 +94,7 @@ if __name__ == "__main__":
     parser.add_argument("--left_fn", type=str, default=None)
     parser.add_argument("--right_fn", type=str, default=None)
     parser.add_argument("--output_fn", type=str, default='candidates.jsonl')
-    parser.add_argument("--model_fn", type=str, default="model.pth/")
+    parser.add_argument("--model_fn", type=str, default="model.pth")
     parser.add_argument("--batch_size", type=int, default=512)
     parser.add_argument("--k", type=int, default=2)
     parser.add_argument("--threshold", type=float, default=None) # 0.6
@@ -105,6 +106,9 @@ if __name__ == "__main__":
     # generate the vectors
     mata = matb = None
     entries_a = entries_b = None
+
+    start_time = time.time()
+
     if hp.left_fn is not None:
         entries_a, mata = encode_all(hp.input_path, hp.left_fn, model)
     if hp.right_fn is not None:
@@ -115,6 +119,12 @@ if __name__ == "__main__":
                    threshold=hp.threshold,
                    k=hp.k,
                    batch_size=hp.batch_size)
+        
+        end_time = time.time()
+
+        time_elapsed = end_time - start_time
+        print('Time elapsed in seconds',time_elapsed)
+
         dump_pairs(os.path.join(hp.input_path, hp.output_fn),
                    entries_a,
                    entries_b,

@@ -1,6 +1,7 @@
 #GiG
 import numpy as np
 import pandas as pd
+import time
 from pathlib import Path
 import blocking_utils
 
@@ -59,6 +60,8 @@ class DeepBlocker:
 
         print('after preprocess')
 
+        start_time = time.time()
+
         print("Obtaining tuple embeddings for left table")
         self.left_tuple_embeddings = self.tuple_embedding_model.get_tuple_embedding(self.left_df["_merged_text"])
         print("Obtaining tuple embeddings for right table")
@@ -72,5 +75,9 @@ class DeepBlocker:
         topK_neighbors = self.vector_pairing_model.query(self.left_tuple_embeddings)
 
         self.candidate_set_df = blocking_utils.topK_neighbors_to_candidate_set(topK_neighbors)
+
+        end_time = time.time()
+        time_elapsed = end_time - start_time
+        print('Time elapsed in seconds',time_elapsed)
 
         return self.candidate_set_df
