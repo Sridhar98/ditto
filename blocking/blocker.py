@@ -5,6 +5,7 @@ import pickle
 import numpy as np
 import argparse
 import time
+import pandas as pd
 
 from tqdm import tqdm
 
@@ -88,15 +89,28 @@ def dump_pairs(out_fn, entries_a, entries_b, pairs):
         for idx_a, idx_b, score in pairs:
             writer.write([entries_a[idx_a], entries_b[idx_b], str(score)])
 
+def compute_blocking_statistics(pairs,golden_df,left_df,right_df):
+    candidate_df = pd.DataFrame(pairs, columns=['ltable_id', 'rtable_id','scores'])
+    
+    candidate_df = candidate_df[['ltable_id','rtable_id']]
+    print('candidate df head',candidate_df.head())
+    merged_df = pd.merge(candidate_df, golden_df, on=['ltable_id', 'rtable_id'])
+    print('len merged df',len(merged_df))
+    recall = len(merged_df) / len(golden_df),
+    cssr = len(pairs) / (len(left_df) * len(right_df))
+    print('Recall',recall)
+    print('CSSR',cssr)
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--input_path", type=str, default="../data/er_magellan/Structured/Beer/")
+    parser.add_argument("--input_path", type=str, default="../data/er_magellan/Structured/Amazon-Google/")
     parser.add_argument("--left_fn", type=str, default=None)
     parser.add_argument("--right_fn", type=str, default=None)
+    parser.add_argument("--golden_fn", type=str, default=None)
     parser.add_argument("--output_fn", type=str, default='candidates.jsonl')
     parser.add_argument("--model_fn", type=str, default="model.pth")
     parser.add_argument("--batch_size", type=int, default=512)
-    parser.add_argument("--k", type=int, default=2)
+    parser.add_argument("--k", type=int, default=50)
     parser.add_argument("--threshold", type=float, default=None) # 0.6
     hp = parser.parse_args()
 
@@ -114,11 +128,18 @@ if __name__ == "__main__":
     if hp.right_fn is not None:
         entries_b, matb = encode_all(hp.input_path, hp.right_fn, model)
 
+    print('entries a',len(entries_a))
+    print('entries_b',len(entries_b))
+
     if mata and matb:
         pairs = blocked_matmul(mata, matb,
                    threshold=hp.threshold,
                    k=hp.k,
                    batch_size=hp.batch_size)
+        
+        print('pairs')
+        for i in range(10):
+            print(pairs[i])
         
         end_time = time.time()
 
@@ -129,3 +150,9 @@ if __name__ == "__main__":
                    entries_a,
                    entries_b,
                    pairs)
+        
+        golden_df = pd.read_csv(hp.golden_fn)
+
+        compute_blocking_statistics(pairs,golden_df,entries_a,entries_b)
+        
+    

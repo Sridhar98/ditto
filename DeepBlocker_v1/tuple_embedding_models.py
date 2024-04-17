@@ -163,8 +163,11 @@ class AutoEncoderTupleEmbedding(ABCTupleEmbedding):
     def preprocess(self, list_of_tuples):
         print("Training AutoEncoder model")
         self.sif_embedding_model.preprocess(list_of_tuples)
+        print('Got SIF embedding')
         embedding_matrix = self.sif_embedding_model.get_tuple_embedding(list_of_tuples)
+        print('Got embedding matrix')
         trainer = dl_models.AutoEncoderTrainer (self.input_dimension, self.hidden_dimensions)
+        print('initialized trainer')
         self.autoencoder_model = trainer.train(embedding_matrix, num_epochs=NUM_EPOCHS, batch_size=BATCH_SIZE)
  
 
@@ -257,17 +260,19 @@ class CTTTupleEmbedding(ABCTupleEmbedding):
     def preprocess(self, list_of_tuples):
         print("Training CTT model")
         self.sif_embedding_model.preprocess(list_of_tuples)
-
+        print('got sif embeddings')
         left_tuple_list, right_tuple_list, label_list = generate_synthetic_training_data(list_of_tuples, 
             self.synth_tuples_per_tuple, self.pos_to_neg_ratio, self.max_perturbation)
-
+        print('generated syn data')
         self.left_embedding_matrix = self.sif_embedding_model.get_tuple_embedding(left_tuple_list)
         self.right_embedding_matrix = self.sif_embedding_model.get_tuple_embedding(right_tuple_list)
+        print('got tuple embeddings')
         self.label_list = label_list
 
         trainer = dl_models.CTTModelTrainer (self.input_dimension, self.hidden_dimensions)
+        print('initialized trainer')
         self.ctt_model = trainer.train(self.left_embedding_matrix, self.right_embedding_matrix, self.label_list,
-                num_epochs=NUM_EPOCHS, batch_size=BATCH_SIZE)
+                num_epochs=NUM_EPOCHS, batch_size=BATCH_SIZE//2)
  
 
     #This function computes the tuple embedding.

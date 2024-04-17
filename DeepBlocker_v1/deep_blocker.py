@@ -51,6 +51,10 @@ class DeepBlocker:
         self.right_df = right_df
         self.cols_to_block = cols_to_block
 
+        print('cols to block',cols_to_block)
+        print('left df head',left_df.columns)
+        print('right df head',right_df.columns)
+
         self.validate_columns()
         self.preprocess_datasets()
 

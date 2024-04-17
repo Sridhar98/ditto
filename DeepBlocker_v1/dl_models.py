@@ -4,6 +4,7 @@ import torch
 from torch import nn
 from torch.utils.data import Dataset, DataLoader
 from configurations import * 
+from tqdm import tqdm
 
 def get_device():
     if torch.cuda.is_available():
@@ -92,17 +93,13 @@ class AutoEncoderTrainer:
 
         for epoch in range(num_epochs):
             train_loss = 0
-            for batch_idx, data in enumerate(train_dataloader):
+            for batch_idx, data in tqdm(enumerate(train_dataloader),leave=False):
                 data = data.to(self.device)
                 #added by sr
                 #self.model = self.model.to(self.device)
                 optimizer.zero_grad()
-                start_time
                 output = self.model(data)
-                end_time
-                time_elapsed = end_time-start_time
-
-                print('output',output,'data',data)
+                #print('output',output,'data',data)
                 loss = loss_function(output, data)
                 loss.backward()
                 train_loss += loss.item()

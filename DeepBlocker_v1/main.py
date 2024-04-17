@@ -3,7 +3,7 @@
 import numpy as np
 import pandas as pd
 from pathlib import Path
-
+import os
 from deep_blocker import DeepBlocker
 from tuple_embedding_models import  AutoEncoderTupleEmbedding, CTTTupleEmbedding, HybridTupleEmbedding
 from vector_pairing_models import ExactTopKVectorPairing
@@ -49,21 +49,30 @@ def do_blocking(folder_root, left_table_fname, right_table_fname, cols_to_block,
 
 
 if __name__ == "__main__":
-    folder_root = "data/Structured/Amazon-Google"
+    folder_root = "data/Textual/Abt-Buy"
     left_table_fname, right_table_fname = "tableA.csv", "tableB.csv"
-    cols_to_block = ["title", "manufacturer", "price"]
 
-    # print("using AutoEncoder embedding")
-    # tuple_embedding_model = AutoEncoderTupleEmbedding()
-    # topK_vector_pairing_model = ExactTopKVectorPairing(K=50)
-    # statistics_dict = do_blocking(folder_root, left_table_fname, right_table_fname, cols_to_block, tuple_embedding_model, topK_vector_pairing_model)
-    # print(statistics_dict)
+    # df = pd.read_csv(os.path.join(folder_root,left_table_fname))
+    # print(df.columns)
 
-    print("using CTT embedding")
-    tuple_embedding_model = CTTTupleEmbedding()
+    #cols_to_block = ["Beer_Name", "Brew_Factory_Name", "Style"]
+    #cols_to_block = ["id","content"]
+    #cols_to_block = ["title","manufacturer","price"]
+    #cols_to_block = ["title","authors","venue"]
+    #cols_to_block = ["name","addr","city"]
+    cols_to_block = ["name","description","price"]
+
+    print("using AutoEncoder embedding")
+    tuple_embedding_model = AutoEncoderTupleEmbedding()
     topK_vector_pairing_model = ExactTopKVectorPairing(K=50)
     statistics_dict = do_blocking(folder_root, left_table_fname, right_table_fname, cols_to_block, tuple_embedding_model, topK_vector_pairing_model)
     print(statistics_dict)
+
+    # print("using CTT embedding")
+    # tuple_embedding_model = CTTTupleEmbedding()
+    # topK_vector_pairing_model = ExactTopKVectorPairing(K=50)
+    # statistics_dict = do_blocking(folder_root, left_table_fname, right_table_fname, cols_to_block, tuple_embedding_model, topK_vector_pairing_model)
+    # print(statistics_dict)
 
     # print("using Hybrid embedding")
     # tuple_embedding_model = HybridTupleEmbedding()

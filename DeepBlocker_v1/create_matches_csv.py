@@ -2,8 +2,8 @@ import os
 import pandas as pd
 import csv
 
-data_root = r'/home/sridhar/DeepBlocker_data_emb/data/Structured/Amazon-Google'
-save_root = r'/home/sridhar/ditto/DeepBlocker_v1/data'
+data_root = r'/home/sridhar/ditto/DeepBlocker_v1/data/Dirty/iTunes-Amazon'
+save_root = r'/home/sridhar/ditto/DeepBlocker_v1/data/Dirty/iTunes-Amazon'
 
 #read train, val, test csvs and concatenate them in a single file
 
@@ -20,9 +20,9 @@ df3 = df3[df3['label'] == 1]
 combined_df = pd.concat([df1, df2, df3], ignore_index=True)
 
 # Keep only 'ltable_id' and 'rtable_id' columns
-combined_df = combined_df[['ltable_id', 'rtable_id']]
+combined_df = df1[['ltable_id', 'rtable_id']]
 
 # Write the combined dataframe to a new CSV file
-combined_df.to_csv('matches1.csv', index=False)
+combined_df.to_csv(os.path.join(save_root,'matches.csv'), index=False)
 
 
